@@ -249,17 +249,26 @@ function Grid(props) {
                     let didTileIncrease = false;
                     for (let j = 1; j < size; j++) {
                         //check if next Tile is a border the left
-                        if ((i + j) % size !== 0) {
+                        if ((i + j) % size !== 0 && (i+j)<=(size*size)) {
                             let tempTile = tileList[i + j];
                             console.log(tempTile);
                             //Check if tile is empty
-                            if (tempList[i].value === 0 && tempTile.value > 0) {
+                            let canSwap = true;
+                            for (let k = i + 1; k < (i + j); k++) {
+                                console.log('this is k: ' + k);
+                                if (tempList[k].value > 0) {
+                                    console.log('false');
+                                    canSwap = false;
+                                    break;
+                                }
+                            }
+                            if (tempList[i].value === 0 && tempTile.value > 0 && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 tempTile.value = 0;
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease) {
+                            else if (tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 newPoints = newPoints + tempTile.value;
                                 tempTile.value = 0;
@@ -289,13 +298,22 @@ function Grid(props) {
                             console.log('i = ' + i);
                             console.log('j = ' + j);
                             //Check if tile is empty
-                            if (tempList[i].value === 0 && tempTile.value > 0) {
+                            let canSwap = true;
+                            for (let k = i - 1; k > (i-j); k--) {
+                                console.log('this is k: ' + k);
+                                if (tempList[k].value > 0) {
+                                    console.log('false');
+                                    canSwap = false;
+                                    break;
+                                }
+                            }
+                            if (tempList[i].value === 0 && tempTile.value > 0 && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 tempTile.value = 0;
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease) {
+                            else if (tempList[i].value === tempTile.value && !didTileIncrease &&canSwap) {
                                 tempList[i].value += tempTile.value;
                                 newPoints = newPoints + tempTile.value;
                                 tempList[i - j].value = 0;
