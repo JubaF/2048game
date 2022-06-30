@@ -24,8 +24,12 @@ function Grid(props) {
     // Total Tile to use
     if (!isInitialized) {
         let tempList = [...tileList];
-        for (let i = 0; i < 9; i++) {
-            let rdNumber = Math.floor((Math.random() * 100) + 1) % 2 === 0 ? 0 : 2;
+        let totalNumberHigherZero = 0;
+        for (let i = 0; i < size * size; i++) {
+            let rdNumber = totalNumberHigherZero === size ? 0 : Math.floor((Math.random() * 100) + 1) % 2 === 0 ? 0 : 2;
+            if (rdNumber !== 0) {
+                totalNumberHigherZero += 1;
+            }
             tempList.push({value: rdNumber})
         }
         setTileList(tempList);
@@ -53,7 +57,7 @@ function Grid(props) {
         };
     }, []);
 
-    const sizeTile = windowSize.innerWidth * 0.7 / size;
+    const sizeTile = windowSize.innerWidth * 0.4 / size;
     const borderGap = '20px';
 
     //Get and Set Game Score
@@ -61,13 +65,12 @@ function Grid(props) {
     const [score, setScore] = useState(0);
     const [gameState, setGameState] = useState('on');
 
-    const updateScore = (newPoints) => {
-        console.log("This is the newPoints :" + newPoints);
-        let newScore = score;
-        newScore += newPoints;
-        setScore(newScore);
-
-    };
+    // const updateScore = (newPoints) => {
+    //     console.log("This is the newPoints :" + newPoints);
+    //     let newScore = score + newPoints;
+    //     setScore(newScore);
+    //
+    // };
 
     //Update Grid
 
@@ -166,6 +169,7 @@ function Grid(props) {
     const updateGrid = async (key) => {
         let tempList = [...tileList];
         let newPoints = 0;
+
         if (key === 'down') {
             for (let i = tileList.length - 1; i >= 0; i--) {
                 // console.log(i);
@@ -176,15 +180,24 @@ function Grid(props) {
                             let tempTile = tileList[i - (size * j)];
                             console.log(tempTile);
                             //Check if tile is empty
-                            if (tempList[i].value === 0 && tempTile.value > 0) {
+                            let canSwap = true;
+                            for (let k = i - size; k > (i - (j * size)); k = k - size) {
+                                console.log('this is k: ' + k);
+                                if (tempList[k].value > 0) {
+                                    console.log('false');
+                                    canSwap = false;
+                                    break;
+                                }
+                            }
+                            if (tempList[i].value === 0 && tempTile.value > 0 && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 tempTile.value = 0;
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease) {
+                            else if (tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
                                 tempList[i].value += tempTile.value;
-                                newPoints += tempTile.value;
+                                newPoints = newPoints + tempTile.value;
                                 tempTile.value = 0;
                                 didTileIncrease = true;
 
@@ -203,15 +216,24 @@ function Grid(props) {
                             let tempTile = tileList[i + (size * j)];
                             console.log(tempTile);
                             //Check if tile is empty
-                            if (tempList[i].value === 0 && tempTile.value > 0) {
+                            let canSwap = true;
+                            for (let k = i + size; k < (i + (j * size)); k = k + size) {
+                                console.log('this is k: ' + k);
+                                if (tempList[k].value > 0) {
+                                    console.log('false');
+                                    canSwap = false;
+                                    break;
+                                }
+                            }
+                            if (tempList[i].value === 0 && tempTile.value > 0 && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 tempTile.value = 0;
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease) {
+                            else if (tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
                                 tempList[i].value += tempTile.value;
-                                newPoints += tempTile.value;
+                                newPoints = newPoints + tempTile.value;
                                 tempTile.value = 0;
                                 didTileIncrease = true;
 
@@ -239,7 +261,7 @@ function Grid(props) {
                             // Check if it's same value + has not been swapped already
                             else if (tempList[i].value === tempTile.value && !didTileIncrease) {
                                 tempList[i].value += tempTile.value;
-                                newPoints += tempTile.value;
+                                newPoints = newPoints + tempTile.value;
                                 tempTile.value = 0;
                                 didTileIncrease = true;
 
@@ -275,7 +297,7 @@ function Grid(props) {
                             // Check if it's same value + has not been swapped already
                             else if (tempList[i].value === tempTile.value && !didTileIncrease) {
                                 tempList[i].value += tempTile.value;
-                                newPoints += tempTile.value;
+                                newPoints = newPoints + tempTile.value;
                                 tempList[i - j].value = 0;
                                 didTileIncrease = true;
 
@@ -290,7 +312,8 @@ function Grid(props) {
         tempList = addTile(tempList);
         // console.log(tempList);
         // await delay(5000);
-        updateScore(newPoints);
+        console.log(score);
+        setScore(score + newPoints);
         setTileList(tempList);
     };
 
@@ -319,7 +342,7 @@ function Grid(props) {
         <div
             style={{
                 display: 'grid',
-                margin: "10% 15%",
+                // margin: "30% 30%",
                 backgroundColor: '#BBAC9F',
                 gridTemplateColumns: totalColumns,
                 gridTemplateRows: totalColumns,

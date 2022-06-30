@@ -20,14 +20,15 @@ function Tile(props) {
     let textColor = props.value < 8 ? "766E65" : "white";
 
     const size = props.size + "px";
-    console.log("Tile size: " + size)
+    // console.log("Tile size: " + size)
     return <div
         style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             background: backgroundColor,
-            height: size
+            height: size,
+            width: size
         }}>
         <h1>{props.value === 0 ? null : props.value}</h1></div>
 };
