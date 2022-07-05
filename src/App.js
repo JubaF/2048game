@@ -15,8 +15,13 @@ function App() {
                 width: '100%',
 
             }}>
-                <h2>2048 GAME</h2>
-                <Grid size={4}/>
+                <h2  style={{
+                    color: 'orange',
+                    fontWeight: '900',
+                    fontSize: '40px',
+                    textAlign: 'center'
+                }}>2048 GAME</h2>
+                <Grid size={5}/>
             </div>
 
         </div>

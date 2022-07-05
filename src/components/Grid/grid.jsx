@@ -1,6 +1,8 @@
 import Tile from "../Tile/tile";
 import {useEffect, useState} from "react";
 
+import '../../index.css';
+
 function Grid(props) {
     const size = props.size
     let totalColumns = 'auto '.repeat(size);
@@ -65,26 +67,26 @@ function Grid(props) {
     const [score, setScore] = useState(0);
     const [gameState, setGameState] = useState('on');
 
-    // const updateScore = (newPoints) => {
-    //     console.log("This is the newPoints :" + newPoints);
-    //     let newScore = score + newPoints;
-    //     setScore(newScore);
-    //
-    // };
+    const onNewGame = () => {
+        setTileList([]);
+        setIsInitialized(false);
+        setGameState('on');
+    }
+
 
     //Update Grid
 
     const handleKey = async (e) => {
-        if (e.key === 'ArrowUp') {
+        if (e.key === 'ArrowUp' && gameState === 'on') {
             console.log('up');
             await updateGrid('up');
-        } else if (e.key === 'ArrowDown') {
+        } else if (e.key === 'ArrowDown' && gameState === 'on') {
             console.log('down');
             await updateGrid('down');
-        } else if (e.key === 'ArrowRight') {
+        } else if (e.key === 'ArrowRight' && gameState === 'on') {
             console.log('right');
             await updateGrid('right');
-        } else if (e.key === 'ArrowLeft') {
+        } else if (e.key === 'ArrowLeft' && gameState === 'on') {
             console.log('left');
             await updateGrid('left');
         }
@@ -92,79 +94,6 @@ function Grid(props) {
 
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
-    // const updateGrid = async (key) => {
-    //     let tempList = [...tileList];
-    //     if (key === 'up') {
-    //         for (let i = tileList.length - 1; i >= 0; i--) {
-    //             // console.log(i);
-    //             if (i - size >= 0) {
-    //                 let tempTile = tileList[i - size];
-    //                 console.log(tempTile);
-    //                 if (tempList[i].value === tempTile.value) {
-    //                     tempList[i].value = 0;
-    //                     tempTile.value = tempTile.value * 2;
-    //                     //Increase Score ...
-    //                 } else if (tempTile.value === 0) {
-    //                     tempTile.value = tempList[i].value;
-    //                     tempList[i].value = 0;
-    //                 }
-    //             }
-    //         }
-    //     } else if (key === 'down') {
-    //         for (let i = 0; i < tempList.length; i++) {
-    //             // console.log(i);
-    //             if (i + size < tempList.length) {
-    //                 let tempTile = tileList[i + size];
-    //                 console.log(tempTile);
-    //                 if (tempList[i].value === tempTile.value) {
-    //                     tempList[i].value = 0;
-    //                     tempTile.value = tempTile.value * 2;
-    //                     //Increase Score ...
-    //                 } else if (tempTile.value === 0) {
-    //                     tempTile.value = tempList[i].value;
-    //                     tempList[i].value = 0;
-    //                 }
-    //             }
-    //         }
-    //     } else if (key === 'right') {
-    //         for (let i = 0; i < tempList.length; i++) {
-    //             // console.log(i);
-    //             if ((i + 1) % size !== 0) {
-    //                 let tempTile = tileList[i + 1];
-    //                 console.log(tempTile);
-    //                 if (tempList[i].value === tempTile.value) {
-    //                     tempList[i].value = 0;
-    //                     tempTile.value = tempTile.value * 2;
-    //                     //Increase Score ...
-    //                 } else if (tempTile.value === 0) {
-    //                     tempTile.value = tempList[i].value;
-    //                     tempList[i].value = 0;
-    //                 }
-    //             }
-    //         }
-    //     } else if (key === 'left') {
-    //         for (let i = tileList.length - 1; i >= 0; i--) {
-    //             // console.log(i);
-    //             if (i % size !== 0) {
-    //                 let tempTile = tileList[i - 1];
-    //                 console.log(tempTile);
-    //                 if (tempList[i].value === tempTile.value) {
-    //                     tempList[i].value = 0;
-    //                     tempTile.value = tempTile.value * 2;
-    //                     //Increase Score ...
-    //                 } else if (tempTile.value === 0) {
-    //                     tempTile.value = tempList[i].value;
-    //                     tempList[i].value = 0;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     setTileList(tempList);
-    //     tempList = addTile(tempList);
-    //     // console.log(tempList);
-    //     await delay(5000);
-    //     setTileList(tempList);
-    // };
 
     const updateGrid = async (key) => {
         let tempList = [...tileList];
@@ -178,13 +107,13 @@ function Grid(props) {
                     for (let j = 1; j < size; j++) {
                         if (i - (size * j) >= 0) {
                             let tempTile = tileList[i - (size * j)];
-                            console.log(tempTile);
+                            // console.log(tempTile);
                             //Check if tile is empty
                             let canSwap = true;
                             for (let k = i - size; k > (i - (j * size)); k = k - size) {
-                                console.log('this is k: ' + k);
+                                // console.log('this is k: ' + k);
                                 if (tempList[k].value > 0) {
-                                    console.log('false');
+                                    // console.log('false');
                                     canSwap = false;
                                     break;
                                 }
@@ -195,9 +124,11 @@ function Grid(props) {
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
+                            else if (tempList[i].value !== 0 && tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 newPoints = newPoints + tempTile.value;
+                                let pointAdded = tempTile.value
+                                console.log('Points Added Down: ' + pointAdded);
                                 tempTile.value = 0;
                                 didTileIncrease = true;
 
@@ -214,13 +145,13 @@ function Grid(props) {
                     for (let j = 1; j < size; j++) {
                         if (i + (size * j) < tempList.length) {
                             let tempTile = tileList[i + (size * j)];
-                            console.log(tempTile);
+                            // console.log(tempTile);
                             //Check if tile is empty
                             let canSwap = true;
                             for (let k = i + size; k < (i + (j * size)); k = k + size) {
-                                console.log('this is k: ' + k);
+                                // console.log('this is k: ' + k);
                                 if (tempList[k].value > 0) {
-                                    console.log('false');
+                                    // console.log('false');
                                     canSwap = false;
                                     break;
                                 }
@@ -231,9 +162,12 @@ function Grid(props) {
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
+                            else if (tempList[i].value !== 0 && tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 newPoints = newPoints + tempTile.value;
+                                let pointAdded = tempTile.value
+                                // console.log('Can swap? ' + canSwap);
+                                console.log('Points Added Up: ' + pointAdded);
                                 tempTile.value = 0;
                                 didTileIncrease = true;
 
@@ -249,15 +183,15 @@ function Grid(props) {
                     let didTileIncrease = false;
                     for (let j = 1; j < size; j++) {
                         //check if next Tile is a border the left
-                        if ((i + j) % size !== 0 && (i+j)<=(size*size)) {
+                        if ((i + j) % size !== 0 && (i + j) <= (size * size)) {
                             let tempTile = tileList[i + j];
-                            console.log(tempTile);
+                            // console.log(tempTile);
                             //Check if tile is empty
                             let canSwap = true;
                             for (let k = i + 1; k < (i + j); k++) {
-                                console.log('this is k: ' + k);
+                                // console.log('this is k: ' + k);
                                 if (tempList[k].value > 0) {
-                                    console.log('false');
+                                    // console.log('false');
                                     canSwap = false;
                                     break;
                                 }
@@ -268,7 +202,7 @@ function Grid(props) {
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
+                            else if (tempList[i].value !== 0 && tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 newPoints = newPoints + tempTile.value;
                                 tempTile.value = 0;
@@ -293,16 +227,16 @@ function Grid(props) {
                         // Check if tempTile is aborder on the left
                         if ((i - j + 1) % size !== 0 && (i - j) >= 0) {
                             let tempTile = tileList[i - j];
-                            console.log('this is the current Tile value');
-                            console.log(tempTile)
-                            console.log('i = ' + i);
-                            console.log('j = ' + j);
+                            // console.log('this is the current Tile value');
+                            // console.log(tempTile)
+                            // console.log('i = ' + i);
+                            // console.log('j = ' + j);
                             //Check if tile is empty
                             let canSwap = true;
-                            for (let k = i - 1; k > (i-j); k--) {
-                                console.log('this is k: ' + k);
+                            for (let k = i - 1; k > (i - j); k--) {
+                                // console.log('this is k: ' + k);
                                 if (tempList[k].value > 0) {
-                                    console.log('false');
+                                    // console.log('false');
                                     canSwap = false;
                                     break;
                                 }
@@ -313,14 +247,14 @@ function Grid(props) {
                                 //Increase Score ...
                             }
                             // Check if it's same value + has not been swapped already
-                            else if (tempList[i].value === tempTile.value && !didTileIncrease &&canSwap) {
+                            else if (tempList[i].value !== 0 && tempList[i].value === tempTile.value && !didTileIncrease && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 newPoints = newPoints + tempTile.value;
                                 tempList[i - j].value = 0;
                                 didTileIncrease = true;
 
                             }
-                            console.log(tempList);
+                            // console.log(tempList);
                         }
                     }
                 }
@@ -330,8 +264,13 @@ function Grid(props) {
         tempList = addTile(tempList);
         // console.log(tempList);
         // await delay(5000);
-        console.log(score);
-        setScore(score + newPoints);
+        // console.log(score);
+        console.log('End Initital score: ' + score);
+        console.log('End NewPoints score: ' + newPoints);
+        let newScore = score + newPoints;
+        console.log('End New score: ' + newScore);
+        setScore(newScore);
+        console.log('End Current score: ' + score);
         setTileList(tempList);
     };
 
@@ -352,22 +291,47 @@ function Grid(props) {
 
     // console.log(tileList);
     // console.log(windowSize.innerWidth);
-    console.log("This is your score: " + score);
-    console.log("This is the game State: " + gameState);
+    // console.log("This is your score: " + score);
+    // console.log("This is the game State: " + gameState);
+
+    let gridColor = gameState === 'off' ? 'rgba(0,0,0,0.4)' : '#BBAC9F'
     return <>
-        <h2>Current Score: {score}</h2>
-        {gameState === 'on' ? null : <h3>GAME OVER</h3>}
+
+        <div style={{
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            margin: '3% 0',
+            width: '50%'
+        }}>
+            <h2>Current Score: {score}</h2>
+            {gameState === 'off' ? null : <button className={'primary_button'} onClick={() => {
+                onNewGame()
+            }}>Start New Game</button>}
+        </div>
         <div
             style={{
                 display: 'grid',
                 // margin: "30% 30%",
-                backgroundColor: '#BBAC9F',
+                backgroundColor: gridColor,
                 gridTemplateColumns: totalColumns,
                 gridTemplateRows: totalColumns,
                 border: borderGap + " solid #BBAC9F",
                 columnGap: borderGap,
                 rowGap: borderGap
             }}>
+            {/*<div*/}
+            {/*    style={{*/}
+            {/*        position:"absolute",*/}
+            {/*        top:'0',*/}
+            {/*        left:'0',*/}
+            {/*        width: '100%',*/}
+            {/*        height: '100%',*/}
+            {/*        zIndex: '10',*/}
+            {/*        backgroundColor: 'orange',*/}
+            {/*        boxSizing: 'content-box',*/}
+            {/*    }}*/}
+            {/*/>*/}
+            {gameState === 'on' ? null : <h3 className={'gameOver'}>GAME OVER</h3>}
             {tileList.map((tile, i) => <Tile key={i} size={sizeTile} value={tile.value}/>)
             }
         </div>
