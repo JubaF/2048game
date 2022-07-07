@@ -3,11 +3,32 @@ import {useEffect, useState} from "react";
 
 import '../../index.css';
 
-function Grid(props) {
-    const size = props.size
-    let totalColumns = 'auto '.repeat(size);
-    let [isInitialized, setIsInitialized] = useState(false)
-    let [tileList, setTileList] = useState([])
+function Grid() {
+    const [size, setSize] = useState(4)
+    const totalColumns = 'auto '.repeat(size);
+    const [isInitialized, setIsInitialized] = useState(false)
+    const [tileList, setTileList] = useState([])
+    //Get and Set Game Score
+
+    const [score, setScore] = useState(0);
+    const [gameState, setGameState] = useState('pending');
+
+    //Size of Tile
+    const [windowSize, setWindowSize] = useState(getWindowSize());
+
+    console.log('size: ' + size);
+    console.log('isInitialize: ' + isInitialized);
+    // console.log('Value of tileList: ' + tileList);
+    console.log('score: ' + score);
+    console.log('gameState: ' + gameState);
+
+    const onInputSize = (event) => {
+        event.preventDefault();
+        if (gameState !== 'on')
+            setSize(event.target.value);
+    }
+
+
     const addTile = (tempList) => {
         let rdNumber = Math.floor((Math.random() * 100) + 1) % 2 === 0 ? 2 : 4;
         let listTileEqual0 = [];
@@ -24,21 +45,21 @@ function Grid(props) {
 
     };
     // Total Tile to use
-    if (!isInitialized) {
-        let tempList = [...tileList];
-        let totalNumberHigherZero = 0;
-        for (let i = 0; i < size * size; i++) {
-            let rdNumber = totalNumberHigherZero === size ? 0 : Math.floor((Math.random() * 100) + 1) % 2 === 0 ? 0 : 2;
-            if (rdNumber !== 0) {
-                totalNumberHigherZero += 1;
+    const handleInitialize = ()=>{
+        if (!isInitialized) {
+            let tempList = [...tileList];
+            let totalNumberHigherZero = 0;
+            for (let i = 0; i < size * size; i++) {
+                let rdNumber = totalNumberHigherZero === size ? 0 : Math.floor((Math.random() * 100) + 1) % 2 === 0 ? 0 : 2;
+                if (rdNumber !== 0) {
+                    totalNumberHigherZero += 1;
+                }
+                tempList.push({value: rdNumber})
             }
-            tempList.push({value: rdNumber})
+            setTileList(tempList);
+            setIsInitialized(true);
         }
-        setTileList(tempList);
-        setIsInitialized(true);
     }
-    //Size of Tile
-    const [windowSize, setWindowSize] = useState(getWindowSize());
 
     function getWindowSize() {
         const {innerWidth, innerHeight} = window;
@@ -52,7 +73,7 @@ function Grid(props) {
 
         window.addEventListener('resize', handleWindowResize);
 
-        document.addEventListener('keydown', handleKey, true);
+        document.addEventListener('keydown', handleKey, true,);
 
         return () => {
             window.removeEventListener('resize', handleWindowResize);
@@ -62,43 +83,39 @@ function Grid(props) {
     const sizeTile = windowSize.innerWidth * 0.4 / size;
     const borderGap = '20px';
 
-    //Get and Set Game Score
-
-    const [score, setScore] = useState(0);
-    const [gameState, setGameState] = useState('on');
-
     const onNewGame = () => {
+        console.log(size);
         setTileList([]);
         setIsInitialized(false);
         setGameState('on');
     }
 
-
     //Update Grid
 
-    const handleKey = async (e) => {
+    const handleKey =  (e) => {
+        console.log('This is the game state in UpdateGrid ' + gameState);
         if (e.key === 'ArrowUp' && gameState === 'on') {
             console.log('up');
-            await updateGrid('up');
+             updateGrid('up');
         } else if (e.key === 'ArrowDown' && gameState === 'on') {
             console.log('down');
-            await updateGrid('down');
+             updateGrid('down');
         } else if (e.key === 'ArrowRight' && gameState === 'on') {
             console.log('right');
-            await updateGrid('right');
+             updateGrid('right');
         } else if (e.key === 'ArrowLeft' && gameState === 'on') {
             console.log('left');
-            await updateGrid('left');
+             updateGrid('left');
         }
     }
 
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
 
-    const updateGrid = async (key) => {
+    const updateGrid =  (key) => {
         let tempList = [...tileList];
         let newPoints = 0;
-
+        console.log('This is the game state  in updateGrid' + gameState);
         if (key === 'down') {
             for (let i = tileList.length - 1; i >= 0; i--) {
                 // console.log(i);
@@ -118,6 +135,8 @@ function Grid(props) {
                                     break;
                                 }
                             }
+
+                            console.log('lol');
                             if (tempList[i].value === 0 && tempTile.value > 0 && canSwap) {
                                 tempList[i].value += tempTile.value;
                                 tempTile.value = 0;
@@ -265,12 +284,12 @@ function Grid(props) {
         // console.log(tempList);
         // await delay(5000);
         // console.log(score);
-        console.log('End Initital score: ' + score);
-        console.log('End NewPoints score: ' + newPoints);
+        // console.log('End Initital score: ' + score);
+        // console.log('End NewPoints score: ' + newPoints);
         let newScore = score + newPoints;
-        console.log('End New score: ' + newScore);
+        // console.log('End New score: ' + newScore);
         setScore(newScore);
-        console.log('End Current score: ' + score);
+        // console.log('End Current score: ' + score);
         setTileList(tempList);
     };
 
@@ -296,6 +315,14 @@ function Grid(props) {
 
     let gridColor = gameState === 'off' ? 'rgba(0,0,0,0.4)' : '#BBAC9F'
     return <>
+        {isInitialized?null:handleInitialize()}
+        <div className={'containerInput'}><h2>
+            Entrez le nombre de case souhaité par lignes/colonnes
+        </h2>
+            <input className={'inputStyle'} onChange={(event) => {
+                onInputSize(event)
+            }}/>
+        </div>
 
         <div style={{
             display: 'flex',
@@ -304,37 +331,39 @@ function Grid(props) {
             width: '50%'
         }}>
             <h2>Current Score: {score}</h2>
-            {gameState === 'off' ? null : <button className={'primary_button'} onClick={() => {
+            <button className={'primary_button'} onClick={() => {
                 onNewGame()
-            }}>Start New Game</button>}
+            }}> {gameState === 'pending' ? 'Start Game' : 'Start New Game'}</button>
         </div>
-        <div
-            style={{
-                display: 'grid',
-                // margin: "30% 30%",
-                backgroundColor: gridColor,
-                gridTemplateColumns: totalColumns,
-                gridTemplateRows: totalColumns,
-                border: borderGap + " solid #BBAC9F",
-                columnGap: borderGap,
-                rowGap: borderGap
-            }}>
-            {/*<div*/}
-            {/*    style={{*/}
-            {/*        position:"absolute",*/}
-            {/*        top:'0',*/}
-            {/*        left:'0',*/}
-            {/*        width: '100%',*/}
-            {/*        height: '100%',*/}
-            {/*        zIndex: '10',*/}
-            {/*        backgroundColor: 'orange',*/}
-            {/*        boxSizing: 'content-box',*/}
-            {/*    }}*/}
-            {/*/>*/}
-            {gameState === 'on' ? null : <h3 className={'gameOver'}>GAME OVER</h3>}
-            {tileList.map((tile, i) => <Tile key={i} size={sizeTile} value={tile.value}/>)
-            }
-        </div>
+        {gameState === 'pending' ? null :
+            <div
+                style={{
+                    display: 'grid',
+                    // margin: "30% 30%",
+                    backgroundColor: gridColor,
+                    gridTemplateColumns: totalColumns,
+                    gridTemplateRows: totalColumns,
+                    border: borderGap + " solid #BBAC9F",
+                    columnGap: borderGap,
+                    rowGap: borderGap
+                }}>
+                {/*<div*/}
+                {/*    style={{*/}
+                {/*        position:"absolute",*/}
+                {/*        top:'0',*/}
+                {/*        left:'0',*/}
+                {/*        width: '100%',*/}
+                {/*        height: '100%',*/}
+                {/*        zIndex: '10',*/}
+                {/*        backgroundColor: 'orange',*/}
+                {/*        boxSizing: 'content-box',*/}
+                {/*    }}*/}
+                {/*/>*/}
+                {gameState === 'on' ? null : <h3 className={'gameOver'}>GAME OVER</h3>}
+                {tileList.map((tile, i) => <Tile key={i} size={sizeTile} value={tile.value}/>)
+                }
+            </div>
+        }
     </>;
 }
 

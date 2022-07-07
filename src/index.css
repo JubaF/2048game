@@ -40,3 +40,14 @@ code {
 
 }
 
+.containerInput{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+
+}
+
+.inputStyle {
+    width: 100%;
+    padding: 5px;
+}

@@ -21,7 +21,7 @@ function App() {
                     fontSize: '40px',
                     textAlign: 'center'
                 }}>2048 GAME</h2>
-                <Grid size={5}/>
+                <Grid/>
             </div>
 
         </div>
