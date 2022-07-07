@@ -5,7 +5,7 @@ import '../../index.css';
 
 function Grid() {
     const [size, setSize] = useState(4)
-    const totalColumns = 'auto '.repeat(size);
+    // const totalColumns = 'auto '.repeat(size);
     const [isInitialized, setIsInitialized] = useState(false)
     const [tileList, setTileList] = useState([])
     //Get and Set Game Score
@@ -25,7 +25,8 @@ function Grid() {
     const onInputSize = (event) => {
         event.preventDefault();
         if (gameState !== 'on')
-            setSize(event.target.value);
+            setSize(parseInt(event.target.value)
+            );
     }
 
 
@@ -45,7 +46,7 @@ function Grid() {
 
     };
     // Total Tile to use
-    const handleInitialize = ()=>{
+    const handleInitialize = () => {
         if (!isInitialized) {
             let tempList = [...tileList];
             let totalNumberHigherZero = 0;
@@ -80,7 +81,7 @@ function Grid() {
         };
     }, []);
 
-    const sizeTile = windowSize.innerWidth * 0.4 / size;
+    // const sizeTile = windowSize.innerWidth * 0.4 / size;
     const borderGap = '20px';
 
     const onNewGame = () => {
@@ -92,28 +93,29 @@ function Grid() {
 
     //Update Grid
 
-    const handleKey =  (e) => {
+    const handleKey = (e) => {
         console.log('This is the game state in UpdateGrid ' + gameState);
-        if (e.key === 'ArrowUp' && gameState === 'on') {
+        if (e.key === 'ArrowUp') {
             console.log('up');
-             updateGrid('up');
-        } else if (e.key === 'ArrowDown' && gameState === 'on') {
+            updateGrid('up');
+        } else if (e.key === 'ArrowDown') {
             console.log('down');
-             updateGrid('down');
-        } else if (e.key === 'ArrowRight' && gameState === 'on') {
+            updateGrid('down');
+        } else if (e.key === 'ArrowRight') {
             console.log('right');
-             updateGrid('right');
+            updateGrid('right');
         } else if (e.key === 'ArrowLeft' && gameState === 'on') {
             console.log('left');
-             updateGrid('left');
+            updateGrid('left');
         }
     }
 
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
 
-    const updateGrid =  (key) => {
+    const updateGrid = (key) => {
         let tempList = [...tileList];
+        console.log("This si the temp list: " + tempList);
         let newPoints = 0;
         console.log('This is the game state  in updateGrid' + gameState);
         if (key === 'down') {
@@ -286,9 +288,9 @@ function Grid() {
         // console.log(score);
         // console.log('End Initital score: ' + score);
         // console.log('End NewPoints score: ' + newPoints);
-        let newScore = score + newPoints;
+        // let newScore = score + newPoints;
         // console.log('End New score: ' + newScore);
-        setScore(newScore);
+        setScore(prevScore => prevScore + newPoints);
         // console.log('End Current score: ' + score);
         setTileList(tempList);
     };
@@ -313,9 +315,17 @@ function Grid() {
     // console.log("This is your score: " + score);
     // console.log("This is the game State: " + gameState);
 
+    const testFunction = () => {
+        let tempList = [...tileList];
+        console.log("This is tempList in test functon:" + tempList);
+    }
+
     let gridColor = gameState === 'off' ? 'rgba(0,0,0,0.4)' : '#BBAC9F'
     return <>
-        {isInitialized?null:handleInitialize()}
+        {isInitialized ? null : handleInitialize()}
+        <button className={'primary_button'} onClick={() => {
+            testFunction()
+        }}>This is a test</button>
         <div className={'containerInput'}><h2>
             Entrez le nombre de case souhaité par lignes/colonnes
         </h2>
@@ -341,8 +351,8 @@ function Grid() {
                     display: 'grid',
                     // margin: "30% 30%",
                     backgroundColor: gridColor,
-                    gridTemplateColumns: totalColumns,
-                    gridTemplateRows: totalColumns,
+                    gridTemplateColumns: 'auto '.repeat(size),
+                    gridTemplateRows: 'auto '.repeat(size),
                     border: borderGap + " solid #BBAC9F",
                     columnGap: borderGap,
                     rowGap: borderGap
@@ -360,7 +370,7 @@ function Grid() {
                 {/*    }}*/}
                 {/*/>*/}
                 {gameState === 'on' ? null : <h3 className={'gameOver'}>GAME OVER</h3>}
-                {tileList.map((tile, i) => <Tile key={i} size={sizeTile} value={tile.value}/>)
+                {tileList.map((tile, i) => <Tile key={i} size={windowSize.innerWidth * 0.4 / size} value={tile.value}/>)
                 }
             </div>
         }
