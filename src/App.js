@@ -18,9 +18,9 @@ function App() {
                 <h2  style={{
                     color: 'orange',
                     fontWeight: '900',
-                    fontSize: '40px',
+                    fontSize: '3rem',
                     textAlign: 'center'
-                }}>2048 GAME</h2>
+                }}>JEU 2048</h2>
                 <Grid/>
             </div>
 
