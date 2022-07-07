@@ -1,10 +1,12 @@
 import Tile from "../Tile/tile";
-import {useEffect, useState} from "react";
+import {useState} from "react";
+import KeyboardEventHandler from 'react-keyboard-event-handler';
 
 import '../../index.css';
 
 function Grid() {
     const [size, setSize] = useState(4)
+    const [inputSize, setInputSize] = useState(4)
     // const totalColumns = 'auto '.repeat(size);
     const [isInitialized, setIsInitialized] = useState(false)
     const [tileList, setTileList] = useState([])
@@ -24,6 +26,7 @@ function Grid() {
 
     const onInputSize = (event) => {
         event.preventDefault();
+        setInputSize(parseInt(event.target.value))
         if (gameState !== 'on')
             setSize(parseInt(event.target.value)
             );
@@ -66,45 +69,34 @@ function Grid() {
         const {innerWidth, innerHeight} = window;
         return {innerWidth, innerHeight};
     }
-
-    useEffect(() => {
-        function handleWindowResize() {
-            setWindowSize(getWindowSize());
-        }
-
-        window.addEventListener('resize', handleWindowResize);
-
-        document.addEventListener('keydown', handleKey, true,);
-
-        return () => {
-            window.removeEventListener('resize', handleWindowResize);
-        };
-    }, []);
-
     // const sizeTile = windowSize.innerWidth * 0.4 / size;
     const borderGap = '20px';
 
     const onNewGame = () => {
         console.log(size);
         setTileList([]);
+        setSize(inputSize);
         setIsInitialized(false);
         setGameState('on');
+        setScore(0);
+        // this.buttonDOM.blur();
     }
 
     //Update Grid
 
     const handleKey = (e) => {
         console.log('This is the game state in UpdateGrid ' + gameState);
-        if (e.key === 'ArrowUp') {
+        console.log(e.key);
+        if (e.key === 'w') {
             console.log('up');
             updateGrid('up');
-        } else if (e.key === 'ArrowDown') {
+        } else if (e.key === 's') {
             console.log('down');
             updateGrid('down');
-        } else if (e.key === 'ArrowRight') {
+        } else if (e.key === 'd') {
             console.log('right');
             updateGrid('right');
-        } else if (e.key === 'ArrowLeft' && gameState === 'on') {
+        } else if (e.key === 'a' && gameState === 'on') {
             console.log('left');
             updateGrid('left');
         }
@@ -283,37 +275,10 @@ function Grid() {
         }
         // setTileList(tempList);
         tempList = addTile(tempList);
-        // console.log(tempList);
-        // await delay(5000);
-        // console.log(score);
-        // console.log('End Initital score: ' + score);
-        // console.log('End NewPoints score: ' + newPoints);
-        // let newScore = score + newPoints;
-        // console.log('End New score: ' + newScore);
         setScore(prevScore => prevScore + newPoints);
-        // console.log('End Current score: ' + score);
         setTileList(tempList);
     };
 
-    // const helperGrid = (tempList,index)=>{
-    //     if (index + size < tempList.length) {
-    //         if (tempList[index].value === tempList[index+size].value) {
-    //             tempList[index].value = tempList[index].value * 2 + helperGrid(tempList,(index+size));
-    //             tempList[index+size].value = 0;
-    //             //Increase Score ...
-    //         } else if (tempList[index].value === 0) {
-    //             tempList[index].value = tempTile.value;
-    //             tempTile.value = 0;
-    //         }
-    //     }else{
-    //         return 0;
-    //     }
-    // }
-
-    // console.log(tileList);
-    // console.log(windowSize.innerWidth);
-    // console.log("This is your score: " + score);
-    // console.log("This is the game State: " + gameState);
 
     const testFunction = () => {
         let tempList = [...tileList];
@@ -323,9 +288,11 @@ function Grid() {
     let gridColor = gameState === 'off' ? 'rgba(0,0,0,0.4)' : '#BBAC9F'
     return <>
         {isInitialized ? null : handleInitialize()}
+        {/*{document.addEventListener('keydown', handleKey, true,)}*/}
         <button className={'primary_button'} onClick={() => {
             testFunction()
-        }}>This is a test</button>
+        }}>This is a test
+        </button>
         <div className={'containerInput'}><h2>
             Entrez le nombre de case souhaité par lignes/colonnes
         </h2>
@@ -341,9 +308,10 @@ function Grid() {
             width: '50%'
         }}>
             <h2>Current Score: {score}</h2>
-            <button className={'primary_button'} onClick={() => {
+            <button className={'primary_button'} onClick={(e) => {
+                e.currentTarget.blur()
                 onNewGame()
-            }}> {gameState === 'pending' ? 'Start Game' : 'Start New Game'}</button>
+            }} > {gameState === 'pending' ? 'Start Game' : 'Start New Game'}</button>
         </div>
         {gameState === 'pending' ? null :
             <div
@@ -372,6 +340,9 @@ function Grid() {
                 {gameState === 'on' ? null : <h3 className={'gameOver'}>GAME OVER</h3>}
                 {tileList.map((tile, i) => <Tile key={i} size={windowSize.innerWidth * 0.4 / size} value={tile.value}/>)
                 }
+                <KeyboardEventHandler
+                    handleKeys={["w", 'a', 's', 'd']}
+                    onKeyEvent={(key, e) => handleKey(e)}/>
             </div>
         }
     </>;
